@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Online Quiz</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="bg-decor">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <!-- Authentication Page -->
+  <div id="auth" class="container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo"></div>
+        <h1>Live Online Quiz</h1>
+        <p class="subtitle">Test your knowledge across multiple topics</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Login</button>
+        <button class="tab-btn" data-tab="signup">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form active">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="auth-form">
+        <div class="form-group">
+          <label for="signupName">Full Name</label>
+          <input type="text" id="signupName" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Create a password (min 6 characters)" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+        </div>
+        <button type="submit" class="btn">Sign Up</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Quiz Application -->
+  <div id="app" class="container hidden">
+    <div id="home">
+      <div class="header-info">
+        <h1>Live Online Quiz</h1>
+        <div class="user-welcome">
+          <span>Welcome, <strong id="currentUserName"></strong></span>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </div>
+      <p class="subtitle">Please enter your name and select the topic</p>
+      <div class="form-group">
+        <label for="username">Enter your name:</label>
+        <input type="text" id="username" placeholder="Your name" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label for="topic">Choose Topic:</label>
+        <select id="topic">
+          <option value="all">All Topics</option>
+          <option value="general">General Knowledge</option>
+          <option value="programming">Programming</option>
+          <option value="science">Science</option>
+          <option value="history">History</option>
+          <option value="sports">Sports</option>
+          <option value="movies">Movies</option>
+          <option value="geography">Geography</option>
+          <option value="math">Math</option>
+          <option value="technology">Technology</option>
+          <option value="literature">Literature</option>
+        </select>
+      </div>
+      <button class="btn" onclick="startQuiz()">Start Quiz</button>
+      <button class="btn btn-secondary" onclick="showAdminPanel()">Admin Panel</button>
+    </div>
+
+    <div id="quiz" class="hidden">
+      <div class="question-container">
+        <h2 id="question">Loading...</h2>
+        <div class="options" id="options"></div>
+        <div id="result"></div>
+        <div class="progress-container">
+          <div class="progress-bar"><div class="progress-fill" id="progress-bar"></div></div>
+          <div class="progress-text" id="progress-text">Question 1 of 5</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="results" class="hidden">
+      <h2>Quiz Complete!</h2>
+      <div class="stats">
+        <div class="stat-item"><div class="stat-value" id="final-score">0</div><div class="stat-label">Your Score</div></div>
+        <div class="stat-item"><div class="stat-value" id="total-questions">0</div><div class="stat-label">Questions</div></div>
+        <div class="stat-item"><div class="stat-value" id="percentage">0%</div><div class="stat-label">Accuracy</div></div>
+      </div>
+      <button class="btn" onclick="showLeaderboard()">View Leaderboard</button>
+      <button class="btn btn-secondary" onclick="restartQuiz()">Take Another Quiz</button>
+    </div>
+
+    <div id="leaderboard" class="hidden">
+      <div class="leaderboard">
+        <h2>Leaderboard</h2>
+        <div id="scores"></div>
+        <button class="btn" onclick="restartQuiz()">Take Another Quiz</button>
+        <button class="btn btn-secondary" onclick="clearLeaderboard()">Clear Leaderboard</button>
+      </div>
+    </div>
+
+    <div id="admin" class="hidden">
+      <h2>Admin Panel</h2>
+      <div class="admin-panel">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('questions', this)">Questions</div>
+          <div class="tab" onclick="switchTab('scores', this)">Scores</div>
+          <div class="tab" onclick="switchTab('statistics', this)">Statistics</div>
+          <div class="tab" onclick="switchTab('settings', this)">Settings</div>
+        </div>
+        <div id="questions-tab" class="tab-content active">
+          <h3>Question Management</h3>
+          <div class="admin-controls">
+            <div>
+              <label>Add New Question:</label>
+              <input type="text" id="new-question" placeholder="Question text">
+              <input type="text" id="new-answer" placeholder="Correct answer">
+              <select id="new-topic">
+                <option value="general">General</option>
+                <option value="programming">Programming</option>
+                <option value="science">Science</option>
+                <option value="history">History</option>
+                <option value="sports">Sports</option>
+                <option value="movies">Movies</option>
+                <option value="geography">Geography</option>
+                <option value="math">Math</option>
+                <option value="technology">Technology</option>
+                <option value="literature">Literature</option>
+              </select>
+              <button class="btn btn-small" onclick="addQuestion()">Add Question</button>
+            </div>
+            <div>
+              <label>Question Options (comma-separated):</label>
+              <input type="text" id="new-options" placeholder="Option1, Option2, Option3, Option4">
+            </div>
+          </div>
+          <pre class="data-display" id="questions-display"></pre>
+        </div>
+        <div id="scores-tab" class="tab-content">
+          <h3>Score Management</h3>
+          <div class="admin-controls">
+            <button class="btn btn-small btn-secondary" onclick="clearAllScores()">Clear All Scores</button>
+          </div>
+          <pre class="data-display" id="scores-display"></pre>
+        </div>
+        <div id="statistics-tab" class="tab-content">
+          <h3>Statistics</h3>
+          <pre class="data-display" id="stats-display"></pre>
+        </div>
+        <div id="settings-tab" class="tab-content">
+          <h3>Application Settings</h3>
+          <div class="admin-controls">
+            <div>
+              <label>Questions per Quiz:</label>
+              <input type="number" id="questions-per-quiz" value="5" min="1" max="20">
+            </div>
+            <div>
+              <label>Points per Correct Answer:</label>
+              <input type="number" id="points-per-answer" value="20" min="1" max="100">
+            </div>
+            <button class="btn btn-small" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn" onclick="showHome()">Back to Quiz</button>
+    
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
